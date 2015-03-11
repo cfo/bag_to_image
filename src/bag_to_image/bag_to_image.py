@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 import rosbag
 import argparse
-import cv
+import cv2
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -18,14 +18,14 @@ def extract(bagfile, pose_topic, out_filename, cam_id):
         for (topic, msg, ts) in bag.read_messages(topics=str(pose_topic)):
             if np.mod(n, extract_every_nth_image) == 0:
                 try:
-                    img = cv_bridge.imgmsg_to_cv(msg, "bgr8")
+                    img = cv_bridge.imgmsg_to_cv2(msg, "bgr8")
                 except CvBridgeError, e:
                     print e
                     
                 ts = msg.header.stamp.to_sec()
                 image_name = 'image_'+str(cam_id)+'_'+str(n)+'.png'
                 f.write('%d %.12f img/%s \n' % (n, ts, image_name))
-                cv.SaveImage(image_name, img)
+                cv2.imwrite(image_name, img)
             n += 1
             #if n > max_imgs:
             #    break
